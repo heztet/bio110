@@ -1,6 +1,7 @@
 from graphics import *
 import random
 
+
 def main():
     # Create window
     windowDimX = 500
@@ -40,7 +41,8 @@ def main():
         for i, m in enumerate(mito):
             # Randomly choose whether to draw new mito
             if ((not mito[i][3]) and (random.randrange(0, 10000) == 0)):
-                mito[i][4] = Oval(mito[i][1], mito[i][2]).draw(win)
+                mito[i][4] = Oval(mito[i][1], mito[i][2])
+                mito[i][4].draw(win)
                 mito[i][3] = True
             # Move mito if drawn
             if (mito[i][3]):
@@ -48,12 +50,20 @@ def main():
                 # Reverse direction if moving left
                 if (mito[i][0] == 1):
                     dist *= -1
-                mito[i][1] = Point(mito[i][1].getX() + dist, mito[i][1].getY())
-                mito[i][2] = Point(mito[i][2].getX() + dist, mito[i][2].getY())
+                mito[i][4].move(dist, 0)
+                mito[i][1] = mito[i][4].getP1()
+                mito[i][2] = mito[i][4].getP2()
+            # Reset mito if it's crossed the neuron body
+            midPointX = Line(mito[i][1], mito[i][2]).getCenter().getX()
+            if not (leftSide <= midPointX <= rightSide):
                 mito[i][4].undraw()
-                mito[i][4] = Oval(mito[i][1], mito[i][2])
-                mito[i][4].draw(win)
-            update()
+                mito[i][3] = False
+
+        # Refresh the window
+        update()
+
+def PointSubtract(p1, p2):
+    return Point(p2.getX() - p1.getX(), p2.getY() - p1.getY())
 
     # Pause for click in window
     win.getMouse()
