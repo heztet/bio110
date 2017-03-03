@@ -23,6 +23,7 @@ class Container(object):
     def dy(self):
         return self.yMax - self.y
 
+
 class NeuronPoly(object):
     def __init__(self, model, avgHeight, numVertices, window):
         self.window = window
@@ -36,19 +37,19 @@ class NeuronPoly(object):
         self.points = []
         dx = (model.dx() - (2 * model.buffer)) / numVertices
         x = model.x
-        while (x <= (model.xMax - model.buffer)):
+        while x <= (model.xMax - model.buffer):
             y = random.gauss(avgHeight, 5)
 
             # Update max height deviation
-            heightDiff = abs(avgHeight - y)
-            if (heightDiff> self.maxHeightDev):
-                self.maxHeightDev = heightDiff
+            height_diff = abs(avgHeight - y)
+            if height_diff > self.maxHeightDev:
+                self.maxHeightDev = height_diff
 
             self.points.append(Point(x, y))
             x += dx
 
-        # Add points at the "base" of the shape (so that it's no longer a line
-        #self.points.append
+            # Add points at the "base" of the shape (so that it's no longer a line
+            # self.points.append
 
     def draw(self):
         self.poly = Polygon(self.points).draw(self.window)
@@ -58,26 +59,30 @@ class NeuronPoly(object):
 
 class Mito(object):
     # Properties that all Mito objects will share
-    mitoWidth  = 50
+    mitoWidth = 50
     mitoHeight = 10
     container = Container(0, 0, 0, 0, 0)
 
-    #minHeight  = 0 #distFromEdge + mitoHeight
-    #maxHeight  = 0 #windowDimY - distFromEdge - mitoHeight
-    #leftSide   = 0 #distFromEdge
-    #rightSide  = 0 #windowDimX - distFromEdge
-    defaultDx  = 0
+    # minHeight  = 0 #distFromEdge + mitoHeight
+    # maxHeight  = 0 #windowDimY - distFromEdge - mitoHeight
+    # leftSide   = 0 #distFromEdge
+    # rightSide  = 0 #windowDimX - distFromEdge
+    defaultDx = 0
     colors = ["aquamarine", "blue violet", "chartreuse", "dark cyan", "dark slate blue",
               "dark turquoise", "deep sky blue", "dark green", "forest green", "light blue", "medium sea green"]
 
     def __init__(self, window):
         # Randomly set whether Mito will be on the right or left side
-        self.onRight = (False, True)[random.randrange(0, 2)] # 1 = right, 0 = left
+        self.onRight = (False, True)[random.randrange(0, 2)]  # 1 = right, 0 = left
         if self.onRight:
-            x = Mito.container.x
-        else:
             x = Mito.container.xMax
-        y = random.uniform(Mito.container.y, Mito.container.yMax)
+        else:
+            x = Mito.container.x
+
+        #
+        y = -1
+        while not (Mito.container.y <= y <= Mito.container.yMax):
+            y = random.gauss(Mito.container.y + Mito.container.dy() / 2, 30)
 
         # Initial two points for Mito oval
         self.p1 = Point(x - Mito.mitoWidth / 2, y - Mito.mitoHeight / 2)
@@ -95,7 +100,7 @@ class Mito(object):
 
     # Mito has a 1/chance odds to be drawn
     def randDraw(self, chance):
-        if (random.randrange(0, chance) == 0):
+        if random.randrange(0, chance) == 0:
             self.draw()
 
     def draw(self):
@@ -107,7 +112,7 @@ class Mito(object):
     # Move mito oval and update its points
     def move(self):
         dist = self.dx
-        if (self.onRight):
+        if self.onRight:
             dist *= -1
         self.oval.move(dist, 0)
         self.p1 = self.oval.getP1()
