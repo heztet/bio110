@@ -1,6 +1,8 @@
 # graphics.py
 """Simple object oriented graphics library  
 
+Link: http://mcsp.wartburg.edu/zelle/python/
+
 The library is designed to make it very easy for novice programmers to
 experiment with computer graphics in an object oriented fashion. It is
 written by John Zelle for use with the book "Python Programming: An
