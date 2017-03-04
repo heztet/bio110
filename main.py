@@ -16,7 +16,6 @@ def main():
                        main_window.y + main_window.buffer,
                        main_window.yMax - main_window.buffer,
                        10)
-    labels.draw(win)
 
     # Mitochondria counter
     text1 = Text(Point(labels.mid.getX(), labels.mid.getY() - labels.buffer), "Mitochondria")
@@ -82,7 +81,7 @@ def main():
                     mito_count -= 1
                     text2.setText("Count: {0}".format(mito_count))
             # Limit the window refresh so that adding more mito won't slow the simulation down
-            update()
+            update(1000)
         # Pause for click in window
         win.getMouse()
         win.close()
