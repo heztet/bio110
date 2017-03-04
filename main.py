@@ -9,12 +9,30 @@ def main():
     main_window = Container(0, 600, 0, 200, 25)
     win = GraphWin("Neuron Mitochondria", main_window.xMax, main_window.yMax, autoflush=False)
 
+    # Create label container
+    label_width = 100
+    labels = Container(main_window.xMax - main_window.buffer - label_width,
+                       main_window.xMax - main_window.buffer,
+                       main_window.y + main_window.buffer,
+                       main_window.yMax - main_window.buffer,
+                       10)
+    labels.draw(win)
+
+    # Mitochondria counter
+    text1 = Text(Point(labels.mid.getX(), labels.mid.getY() - labels.buffer), "Mitochondria")
+    text2 = Text(Point(labels.mid.getX(), labels.mid.getY() + labels.buffer), "Count: 0")
+    mito_count = 0
+    text1.draw(win)
+    text2.draw(win)
+
     # Create model
+    model_label_buffer = 30
     model = Container(main_window.x + main_window.buffer,
-                      main_window.xMax - main_window.buffer - 100,
+                      main_window.xMax - main_window.buffer - labels.dx() - model_label_buffer,
                       main_window.y + main_window.buffer,
                       main_window.yMax - main_window.buffer,
                       0)
+
     # Arbitrary height of both halves of neuron body
     neuron_height = model.dy() / 6
 
@@ -43,7 +61,6 @@ def main():
     mitos = []
     mitos_num = 15
     for i in range(0, mitos_num):
-        # Randomly choose right (1) or left (0) side
         mitos.append(Mito(win))
 
     # Run until mouse is clicked
@@ -52,7 +69,9 @@ def main():
             for m in mitos:
                 # Randomly choose whether to draw new mito
                 if not m.drawn:
-                    m.randDraw(10000)
+                    if m.randDraw(10000):
+                        mito_count += 1
+                        text2.setText("Count: {0}".format(mito_count))
                 # Move mito if drawn
                 else:
                     m.move()
@@ -60,8 +79,10 @@ def main():
                 if m.checkEnd():
                     mitos.remove(m)
                     mitos.append(Mito(win))
+                    mito_count -= 1
+                    text2.setText("Count: {0}".format(mito_count))
             # Limit the window refresh so that adding more mito won't slow the simulation down
-            update(1000)
+            update()
         # Pause for click in window
         win.getMouse()
         win.close()

@@ -1,6 +1,5 @@
 from graphics import *
 import random
-from math import sqrt
 
 
 class Container(object):
@@ -64,14 +63,10 @@ class Mito(object):
     mitoWidth = 50
     mitoHeight = 10
     container = Container(0, 0, 0, 0, 0)
-
-    # minHeight  = 0 #distFromEdge + mitoHeight
-    # maxHeight  = 0 #windowDimY - distFromEdge - mitoHeight
-    # leftSide   = 0 #distFromEdge
-    # rightSide  = 0 #windowDimX - distFromEdge
     defaultDx = 0
     colors = ["aquamarine", "blue violet", "chartreuse", "dark cyan", "dark slate blue",
-              "dark turquoise", "deep sky blue", "dark green", "forest green", "light blue", "medium sea green"]
+              "dark turquoise", "deep sky blue", "dark green", "forest green",
+              "light blue", "medium sea green"]
 
     def __init__(self, window):
         # Randomly set whether Mito will be on the right or left side
@@ -110,6 +105,9 @@ class Mito(object):
     def randDraw(self, chance):
         if random.randrange(0, chance) == 0:
             self.draw()
+            return True
+        else:
+            return False
 
     def draw(self):
         self.oval = Oval(self.p1, self.p2)
@@ -142,4 +140,3 @@ class Mito(object):
 
     def updateVelocity(self):
         self.dx += random.gauss(0, 0.0005)
-
