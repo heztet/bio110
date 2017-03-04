@@ -37,7 +37,7 @@ def main():
                                top_neuron.avgHeight + top_neuron.maxHeightDev,
                                bottom_neuron.avgHeight - bottom_neuron.maxHeightDev,
                                Mito.mitoHeight)
-    Mito.defaultDx = model.dx() / 5000
+    Mito.defaultDx = model.dx() / 10000
 
     # Create mitochondria objects
     mitos = []
@@ -60,8 +60,8 @@ def main():
                 if m.checkEnd():
                     mitos.remove(m)
                     mitos.append(Mito(win))
-            # Refresh the window
-            update()
+            # Limit the window refresh so that adding more mito won't slow the simulation down
+            update(1000)
         # Pause for click in window
         win.getMouse()
         win.close()
@@ -71,4 +71,5 @@ def main():
 
 # Run
 if __name__ == "__main__":
+    random.seed()
     main()

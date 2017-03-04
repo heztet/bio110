@@ -1,14 +1,16 @@
 from graphics import *
 import random
+from math import sqrt
 
 
 class Container(object):
-    def __init__(self, x, xMax, y, yMax, buffer):
+    def __init__(self, x, x_max, y, y_max, buffer):
         self.x = x
-        self.xMax = xMax
+        self.xMax = x_max
         self.y = y
-        self.yMax = yMax
+        self.yMax = y_max
         self.buffer = buffer
+        self.mid = Line(Point(x, y), Point(x_max, y_max)).getCenter()
 
     def draw(self, window):
         Rectangle(Point(self.x, self.y), Point(self.xMax, self.yMax)).draw(window)
@@ -25,23 +27,23 @@ class Container(object):
 
 
 class NeuronPoly(object):
-    def __init__(self, model, avgHeight, numVertices, window):
+    def __init__(self, model, avg_height, num_vertices, window):
         self.window = window
         self.color = "pale goldenrod"
         self.lineColor = "tan"
         self.poly = None
-        self.avgHeight = avgHeight
+        self.avgHeight = avg_height
         self.maxHeightDev = 0
 
         # Fill out random part of border
         self.points = []
-        dx = (model.dx() - (2 * model.buffer)) / numVertices
+        dx = (model.dx() - (2 * model.buffer)) / num_vertices
         x = model.x
         while x <= (model.xMax - model.buffer):
-            y = random.gauss(avgHeight, 5)
+            y = random.gauss(avg_height, 5)
 
             # Update max height deviation
-            height_diff = abs(avgHeight - y)
+            height_diff = abs(avg_height - y)
             if height_diff > self.maxHeightDev:
                 self.maxHeightDev = height_diff
 
@@ -90,7 +92,13 @@ class Mito(object):
         self.mid = Line(self.p1, self.p2).getCenter()
 
         # Initial dx
-        self.dx = Mito.defaultDx
+        # Mito closer to the center will move faster
+        mid_height = Mito.container.mid.getY()
+        if mid_height == self.mid.getY():
+            ratio = 0
+        else:
+            ratio = abs(Mito.container.mid.getY() - self.mid.getY()) / Mito.container.mid.getY()
+        self.dx = Mito.defaultDx * (1 - ratio)
 
         # Not drawn by default
         self.color = Mito.colors[random.randrange(0, len(Mito.colors))]
@@ -111,9 +119,12 @@ class Mito(object):
 
     # Move mito oval and update its points
     def move(self):
+        self.updateVelocity()
+
         dist = self.dx
         if self.onRight:
-            dist *= -1
+            dist = -1 * self.dx
+
         self.oval.move(dist, 0)
         self.p1 = self.oval.getP1()
         self.p2 = self.oval.getP2()
@@ -128,3 +139,7 @@ class Mito(object):
 
     def undraw(self):
         self.oval.undraw()
+
+    def updateVelocity(self):
+        self.dx += random.gauss(0, 0.0005)
+
