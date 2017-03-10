@@ -74,12 +74,12 @@ def main():
                 # Move mito if drawn
                 else:
                     m.move()
-                # Reset mito if it's crossed the neuron body
-                if m.checkEnd():
-                    mitos.remove(m)
-                    mitos.append(Mito(win))
-                    mito_count -= 1
-                    text2.setText("Count: {0}".format(mito_count))
+                    # Reset mito if it's crossed the neuron body
+                    if m.checkEnd():
+                        mitos.remove(m)
+                        mitos.append(Mito(win))
+                        mito_count -= 1
+                        text2.setText("Count: {0}".format(mito_count))
             # Limit the window refresh so that adding more mito won't slow the simulation down
             update(1000)
         # Pause for click in window

@@ -62,6 +62,7 @@ class Mito(object):
     # Properties that all Mito objects will share
     mitoWidth = 50
     mitoHeight = 10
+    currentHeights = []
     container = Container(0, 0, 0, 0, 0)
     defaultDx = 0
     colors = ["aquamarine", "blue violet", "chartreuse", "dark cyan", "dark slate blue",
@@ -71,15 +72,46 @@ class Mito(object):
     def __init__(self, window):
         # Randomly set whether Mito will be on the right or left side
         self.onRight = (False, True)[random.randrange(0, 2)]  # 1 = right, 0 = left
+
+        # Not drawn by default
+        self.color = Mito.colors[random.randrange(0, len(Mito.colors))]
+        self.drawn = False
+        self.oval = None
+        self.window = window
+
+    # Mito has a 1/chance odds to be drawn
+    def randDraw(self, chance):
+        if random.randrange(0, chance) == 0:
+            self.draw()
+        return self.drawn
+
+    def draw(self):
+        # Set x position
         if self.onRight:
             x = Mito.container.xMax
         else:
             x = Mito.container.x
 
-        #
+        # Set y position
         y = -1
-        while not (Mito.container.y <= y <= Mito.container.yMax):
-            y = random.gauss(Mito.container.y + Mito.container.dy() / 2, 30)
+        validHeight = True
+        minHeight = Mito.container.y + Mito.mitoHeight / 2
+        maxHeight = Mito.container.yMax - Mito.mitoHeight / 2
+        counter = 0 # Keep maximum iterations to 10
+        while ((not (minHeight <= y <= maxHeight)) or (not validHeight)) and counter < 10:
+            validHeight = True
+            y = round(random.gauss(Mito.container.y + Mito.container.dy() / 2, 30), 2)
+            # Check that height is valid
+            for height in Mito.currentHeights:
+                if (height - Mito.mitoHeight) <= y <= (height + Mito.mitoHeight):
+                    validHeight = False
+                    break
+            counter += 1
+        # Quit if maximum iterations was reached
+        if counter >= 10:
+            self.drawn = False
+            return
+        Mito.currentHeights.append(y)
 
         # Initial two points for Mito oval
         self.p1 = Point(x - Mito.mitoWidth / 2, y - Mito.mitoHeight / 2)
@@ -95,21 +127,6 @@ class Mito(object):
             ratio = abs(Mito.container.mid.getY() - self.mid.getY()) / Mito.container.mid.getY()
         self.dx = Mito.defaultDx * (1 - ratio)
 
-        # Not drawn by default
-        self.color = Mito.colors[random.randrange(0, len(Mito.colors))]
-        self.drawn = False
-        self.oval = None
-        self.window = window
-
-    # Mito has a 1/chance odds to be drawn
-    def randDraw(self, chance):
-        if random.randrange(0, chance) == 0:
-            self.draw()
-            return True
-        else:
-            return False
-
-    def draw(self):
         self.oval = Oval(self.p1, self.p2)
         self.oval.draw(self.window)
         self.oval.setFill(self.color)
@@ -137,6 +154,9 @@ class Mito(object):
 
     def undraw(self):
         self.oval.undraw()
+        height = round(self.mid.getY(), 2)
+        if height in Mito.currentHeights:
+            Mito.currentHeights.remove(height)
 
     def updateVelocity(self):
         self.dx += random.gauss(0, 0.0005)
