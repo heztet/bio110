@@ -6,7 +6,7 @@ def main():
     random.seed()
 
     # Create window
-    main_window = Container(0, 600, 0, 200, 25)
+    main_window = Container(0, 600, 0, 250, 25)
     win = GraphWin("Neuron Mitochondria", main_window.xMax, main_window.yMax, autoflush=False)
 
     # Create label container
@@ -18,18 +18,51 @@ def main():
                        10)
 
     # Mitochondria counter
-    text1 = Text(Point(labels.mid.getX(), labels.mid.getY() - labels.buffer), "Mitochondria")
-    text2 = Text(Point(labels.mid.getX(), labels.mid.getY() + labels.buffer), "Count: 0")
+    counter_label = Text(Point(labels.mid.getX(), labels.mid.getY() - labels.buffer), "Mitochondria")
+    counter_num = Text(Point(labels.mid.getX(), labels.mid.getY() + labels.buffer), "Count: 0")
     mito_count = 0
-    text1.draw(win)
-    text2.draw(win)
+    counter_label.draw(win)
+    counter_num.draw(win)
+
+    model_label_buffer = 30
+    model_arrows_buffer = 10
+
+    # Arrows container
+    arrows_height = 30
+    arrows = Container(main_window.x + main_window.buffer,
+                       main_window.xMax - main_window.buffer - labels.dx() - model_label_buffer,
+                       main_window.yMax - main_window.buffer - arrows_height,
+                       main_window.yMax - main_window.buffer,
+                       10)
+
+    # Draw arrows
+    arrow_text_buffer = 15
+    arrow_length = 50
+    ante_text = Text(Point(arrows.x + arrows.dx() / 6, arrows.mid.getY()), "Anterograde")
+    ante_text.setFill("blue")
+    ante_text.draw(win)
+    ante_arrow = Line(Point(ante_text.getAnchor().getX() - arrow_length / 2, ante_text.getAnchor().getY() + arrow_text_buffer),
+                      Point(ante_text.getAnchor().getX() + arrow_length / 2, ante_text.getAnchor().getY() + arrow_text_buffer))
+    ante_arrow.setArrow("last")
+    ante_arrow.setWidth(4)
+    ante_arrow.setFill("blue")
+    ante_arrow.draw(win)
+
+    retro_text = Text(Point(arrows.xMax - arrows.dx() / 6, arrows.mid.getY()), "Retrograde")
+    retro_text.setFill("red")
+    retro_text.draw(win)
+    retro_arrow = Line(Point(retro_text.getAnchor().getX() + arrow_length / 2, retro_text.getAnchor().getY() + arrow_text_buffer),
+                       Point(retro_text.getAnchor().getX() - arrow_length / 2, retro_text.getAnchor().getY() + arrow_text_buffer))
+    retro_arrow.setArrow("last")
+    retro_arrow.setWidth(4)
+    retro_arrow.setFill("red")
+    retro_arrow.draw(win)
 
     # Create model
-    model_label_buffer = 30
     model = Container(main_window.x + main_window.buffer,
                       main_window.xMax - main_window.buffer - labels.dx() - model_label_buffer,
                       main_window.y + main_window.buffer,
-                      main_window.yMax - main_window.buffer,
+                      main_window.yMax - arrows.dy() - main_window.buffer - model_arrows_buffer,
                       0)
 
     # Arbitrary height of both halves of neuron body
@@ -70,7 +103,7 @@ def main():
                 if not m.drawn:
                     if m.randDraw(10000):
                         mito_count += 1
-                        text2.setText("Count: {0}".format(mito_count))
+                        counter_num.setText("Count: {0}".format(mito_count))
                 # Move mito if drawn
                 else:
                     m.move()
@@ -79,7 +112,7 @@ def main():
                         mitos.remove(m)
                         mitos.append(Mito(win))
                         mito_count -= 1
-                        text2.setText("Count: {0}".format(mito_count))
+                        counter_num.setText("Count: {0}".format(mito_count))
             # Limit the window refresh so that adding more mito won't slow the simulation down
             update(1000)
         # Pause for click in window
