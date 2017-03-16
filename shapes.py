@@ -2,6 +2,7 @@ from graphics import *
 import random
 
 
+# Generic class to divide a window into multiple pieces
 class Container(object):
     def __init__(self, x, x_max, y, y_max, buffer):
         self.x = x
@@ -25,6 +26,7 @@ class Container(object):
         return self.yMax - self.y
 
 
+# Polygon class to fill different parts of the neuron body
 class NeuronPoly(object):
     def __init__(self, model, avg_height, num_vertices, window):
         self.window = window
@@ -49,15 +51,13 @@ class NeuronPoly(object):
             self.points.append(Point(x, y))
             x += dx
 
-            # Add points at the "base" of the shape (so that it's no longer a line
-            # self.points.append
-
     def draw(self):
         self.poly = Polygon(self.points).draw(self.window)
         self.poly.setFill(self.color)
         self.poly.setOutline(self.lineColor)
 
 
+# Class for a mitochondria oval shape
 class Mito(object):
     # Properties that all Mito objects will share
     mitoWidth = 50
@@ -72,8 +72,8 @@ class Mito(object):
               "light blue", "medium sea green"]
     showCollisions = False
 
+    # Not drawn by default
     def __init__(self, window):
-        # Not drawn by default
         self.onRight = None
         self.p1 = None
         self.p2 = None
@@ -111,7 +111,6 @@ class Mito(object):
                         no_collisions = False
                         Mito.mitos[curr_i].hasCollision = True
                         Mito.mitos[check_i].hasCollision = True
-
             if no_collisions:
                 Mito.mitos[curr_i].hasCollision = False
 
@@ -133,7 +132,7 @@ class Mito(object):
         else:
             x = Mito.container.x
 
-        # Set y position
+        # Restrict y position so that no mito overlap each other
         y = -1
         valid_height = True
         minHeight = Mito.container.y + Mito.mitoHeight / 2
@@ -179,15 +178,19 @@ class Mito(object):
     def move(self):
         self.updateVelocity()
 
+        # Find direction of movement
         dist = self.dx
         if self.onRight:
             dist = -1 * self.dx
 
+        height = self.mid.getY()
         width = self.mid.getX()
         if width in Mito.currentWidths:
-            Mito.currentHeights.remove(self.mid.getY())
             Mito.currentWidths.remove(width)
+        if height in Mito.currentHeights:
+            Mito.currentHeights.remove(height)
 
+        # Move mito oval and update points
         self.oval.move(dist, 0)
         self.p1 = self.oval.getP1()
         self.p2 = self.oval.getP2()

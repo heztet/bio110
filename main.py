@@ -9,6 +9,10 @@ def main():
     main_window = Container(0, 600, 0, 250, 25)
     win = GraphWin("Neuron Mitochondria", main_window.xMax, main_window.yMax, autoflush=False)
 
+    # Buffer values for model, label, and arrow containers
+    model_label_buffer = 30
+    model_arrows_buffer = 10
+
     # Create label container
     label_width = 100
     labels = Container(main_window.xMax - main_window.buffer - label_width,
@@ -24,10 +28,6 @@ def main():
     counter_label.draw(win)
     counter_num.draw(win)
 
-    # Buffer values for model, label, and arrow containers
-    model_label_buffer = 30
-    model_arrows_buffer = 10
-
     # Arrows container
     arrows_height = 30
     arrows = Container(main_window.x + main_window.buffer,
@@ -36,7 +36,7 @@ def main():
                        main_window.yMax - main_window.buffer,
                        10)
 
-    # Draw arrows
+    # Anterograde arrow (shape and text)
     arrow_text_buffer = 15
     arrow_length = 50
     ante_text = Text(Point(arrows.x + arrows.dx() / 6, arrows.mid.getY()), "Anterograde")
@@ -51,6 +51,7 @@ def main():
     ante_arrow.setFill("blue")
     ante_arrow.draw(win)
 
+    # Retrograde arrow (shape and text)
     retro_text = Text(Point(arrows.xMax - arrows.dx() / 6, arrows.mid.getY()), "Retrograde")
     retro_text.setFill("red")
     retro_text.draw(win)
