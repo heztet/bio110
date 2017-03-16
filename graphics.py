@@ -1,3 +1,9 @@
+############################################################
+# NOTE:                                                    #
+# This graphics library has a few minor changes made by me #
+# E.g. Point.getX() and Point.getY() round to two decimals #
+############################################################
+
 # graphics.py
 """Simple object oriented graphics library  
 
@@ -572,8 +578,8 @@ class Point(GraphicsObject):
         other.config = self.config.copy()
         return other
                 
-    def getX(self): return self.x
-    def getY(self): return self.y
+    def getX(self): return round(self.x, 2)
+    def getY(self): return round(self.y, 2)
 
 class _BBox(GraphicsObject):
     # Internal base class for objects represented by bounding box

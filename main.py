@@ -41,8 +41,10 @@ def main():
     ante_text = Text(Point(arrows.x + arrows.dx() / 6, arrows.mid.getY()), "Anterograde")
     ante_text.setFill("blue")
     ante_text.draw(win)
-    ante_arrow = Line(Point(ante_text.getAnchor().getX() - arrow_length / 2, ante_text.getAnchor().getY() + arrow_text_buffer),
-                      Point(ante_text.getAnchor().getX() + arrow_length / 2, ante_text.getAnchor().getY() + arrow_text_buffer))
+    ante_arrow = Line(Point(ante_text.getAnchor().getX() - arrow_length / 2,
+                            ante_text.getAnchor().getY() + arrow_text_buffer),
+                      Point(ante_text.getAnchor().getX() + arrow_length / 2,
+                            ante_text.getAnchor().getY() + arrow_text_buffer))
     ante_arrow.setArrow("last")
     ante_arrow.setWidth(4)
     ante_arrow.setFill("blue")
@@ -51,8 +53,10 @@ def main():
     retro_text = Text(Point(arrows.xMax - arrows.dx() / 6, arrows.mid.getY()), "Retrograde")
     retro_text.setFill("red")
     retro_text.draw(win)
-    retro_arrow = Line(Point(retro_text.getAnchor().getX() + arrow_length / 2, retro_text.getAnchor().getY() + arrow_text_buffer),
-                       Point(retro_text.getAnchor().getX() - arrow_length / 2, retro_text.getAnchor().getY() + arrow_text_buffer))
+    retro_arrow = Line(Point(retro_text.getAnchor().getX() + arrow_length / 2,
+                             retro_text.getAnchor().getY() + arrow_text_buffer),
+                       Point(retro_text.getAnchor().getX() - arrow_length / 2,
+                             retro_text.getAnchor().getY() + arrow_text_buffer))
     retro_arrow.setArrow("last")
     retro_arrow.setWidth(4)
     retro_arrow.setFill("red")
@@ -87,7 +91,7 @@ def main():
                                top_neuron.avgHeight + top_neuron.maxHeightDev,
                                bottom_neuron.avgHeight - bottom_neuron.maxHeightDev,
                                Mito.mitoHeight)
-    Mito.defaultDx = model.dx() / 10000
+    Mito.defaultDx = model.dx() / 1000
 
     # Create mitochondria objects
     mitos = []
@@ -99,8 +103,13 @@ def main():
     try:
         while not win.checkMouse():
             for m in mitos:
+                # Auto draw a mito if none are currently on screen
+                if mito_count == 0:
+                    if m.randDraw(1):
+                        mito_count += 1
+                        counter_num.setText("Count: {0}".format(mito_count))
                 # Randomly choose whether to draw new mito
-                if not m.drawn:
+                elif not m.drawn:
                     if m.randDraw(10000):
                         mito_count += 1
                         counter_num.setText("Count: {0}".format(mito_count))

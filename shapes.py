@@ -63,6 +63,7 @@ class Mito(object):
     mitoWidth = 50
     mitoHeight = 10
     currentHeights = []
+    currentWidths = []
     container = Container(0, 0, 0, 0, 0)
     defaultDx = 0
     colors = ["aquamarine", "blue violet", "chartreuse", "dark cyan", "dark slate blue",
@@ -111,12 +112,15 @@ class Mito(object):
         if counter >= 10:
             self.drawn = False
             return
-        Mito.currentHeights.append(y)
+        #Mito.currentHeights.append(y)
 
         # Initial two points for Mito oval
         self.p1 = Point(x - Mito.mitoWidth / 2, y - Mito.mitoHeight / 2)
         self.p2 = Point(x + Mito.mitoWidth / 2, y + Mito.mitoHeight / 2)
         self.mid = Line(self.p1, self.p2).getCenter()
+
+        Mito.currentHeights.append(self.mid.getY())
+        Mito.currentWidths.append(self.mid.getX())
 
         # Initial dx
         # Mito closer to the center will move faster
@@ -140,10 +144,18 @@ class Mito(object):
         if self.onRight:
             dist = -1 * self.dx
 
+        width = self.mid.getX()
+        if width in Mito.currentWidths:
+            Mito.currentHeights.remove(self.mid.getY())
+            Mito.currentWidths.remove(width)
+
         self.oval.move(dist, 0)
         self.p1 = self.oval.getP1()
         self.p2 = self.oval.getP2()
         self.mid = Line(self.p1, self.p2).getCenter()
+
+        Mito.currentWidths.append(self.mid.getX())
+        Mito.currentHeights.append(self.mid.getY())
 
     def checkEnd(self):
         if not (Mito.container.x <= self.mid.getX() <= Mito.container.xMax):
@@ -154,9 +166,29 @@ class Mito(object):
 
     def undraw(self):
         self.oval.undraw()
-        height = round(self.mid.getY(), 2)
+        height = self.mid.getY()
         if height in Mito.currentHeights:
             Mito.currentHeights.remove(height)
+            Mito.currentWidths.remove(self.mid.getX())
 
     def updateVelocity(self):
+        # Default randomly changed movement speed
         self.dx += random.gauss(0, 0.0005)
+
+        current_width = self.mid.getX()
+        min_width = current_width - Mito.mitoWidth
+        max_width = current_width + Mito.mitoWidth
+
+        # Check if mito is near other mitos
+        for (idx, width) in enumerate(Mito.currentWidths):
+            if (width != current_width) and (min_width <= width <= max_width):
+                print("Close")
+                current_height = self.mid.getY()
+                other_height = Mito.currentHeights[idx]
+                if abs(current_height - other_height) <= Mito.mitoHeight * 2:
+                    print("Slowing")
+                    self.dx -= random.gauss(0, 0.01)
+
+
+
+
