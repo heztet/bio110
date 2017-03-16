@@ -24,6 +24,7 @@ def main():
     counter_label.draw(win)
     counter_num.draw(win)
 
+    # Buffer values for model, label, and arrow containers
     model_label_buffer = 30
     model_arrows_buffer = 10
 
@@ -91,18 +92,17 @@ def main():
                                top_neuron.avgHeight + top_neuron.maxHeightDev,
                                bottom_neuron.avgHeight - bottom_neuron.maxHeightDev,
                                Mito.mitoHeight)
-    Mito.defaultDx = model.dx() / 1000
+    Mito.defaultDx = model.dx() / 10000
 
     # Create mitochondria objects
-    mitos = []
-    mitos_num = 15
-    for i in range(0, mitos_num):
-        mitos.append(Mito(win))
+    Mito.create(15, win)
+    Mito.showCollisions = False
 
     # Run until mouse is clicked
     try:
         while not win.checkMouse():
-            for m in mitos:
+            Mito.checkCollisions()
+            for m in Mito.mitos:
                 # Auto draw a mito if none are currently on screen
                 if mito_count == 0:
                     if m.randDraw(1):
@@ -118,8 +118,8 @@ def main():
                     m.move()
                     # Reset mito if it's crossed the neuron body
                     if m.checkEnd():
-                        mitos.remove(m)
-                        mitos.append(Mito(win))
+                        Mito.mitos.remove(m)
+                        Mito.mitos.append(Mito(win))
                         mito_count -= 1
                         counter_num.setText("Count: {0}".format(mito_count))
             # Limit the window refresh so that adding more mito won't slow the simulation down
